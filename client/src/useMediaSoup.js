@@ -6,8 +6,10 @@ const useMediaSoup = () => {
 
     const [remoteStreams, setRemoteStreams] = useState([]);
 
+    let local_stream 
+
     useEffect(() => {
-        const socket = io("http://localhost:4000/mediasoup");
+        const socket = io("https://meetapi.elancelearning.com/mediasoup");
     
         socket.on('connection-success', ({ socketId }) => {
           console.log(socketId)
@@ -23,7 +25,7 @@ const useMediaSoup = () => {
     
         const getLocalStream = () => {
           navigator.mediaDevices.getUserMedia({
-            audio: true,
+            audio: { autoGainControl: false, noiseSuppression: true, echoCancellation: false },
             video: {
               width: {
                 min: 640,
@@ -65,15 +67,15 @@ const useMediaSoup = () => {
           }
         }
       
-        let audioParams;
+        let audioParams ={ codecOptions: { opusDtx: true }};
         let videoParams = { params };
         let consumingTransports = [];
       
         const streamSuccess = (stream) => {
-      
+          local_stream = stream
           const localVideo = document.getElementById('localVideo');
           if (localVideo) {
-            localVideo.srcObject = stream;
+            localVideo.srcObject = local_stream;
           }
         
           audioParams = { track: stream.getAudioTracks()[0], ...audioParams };
@@ -272,6 +274,7 @@ const useMediaSoup = () => {
       }, []);
       return{
         remoteStreams,
+        local_stream
       }
 };
 

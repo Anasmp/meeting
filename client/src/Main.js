@@ -86,13 +86,20 @@ const Button = styled.button`
 
 const VideoChat = () => {
     
-    const { remoteStreams } = useMediaSoup();
+    const { remoteStreams,local_stream } = useMediaSoup();
     const [isAudioMuted, setIsAudioMuted] = useState(false); 
     const [isVideoOn, setIsVideoOn] = useState(true);
     const localVideoRef = useRef(null);
 
     const toggleMute = () => {
-        setIsAudioMuted(!isAudioMuted);
+        if (localVideoRef.current && localVideoRef.current.srcObject) {
+            const videoTracks = localVideoRef.current.srcObject.getAudioTracks();
+            if (videoTracks.length > 0) {
+                const isOn = videoTracks[0].enabled;
+                videoTracks[0].enabled = !isOn;
+                setIsAudioMuted(!isAudioMuted); 
+            }
+        }
     };
 
     const toggleVideo = () => {
