@@ -1,0 +1,91 @@
+<html>
+  <head>
+    <style>
+            body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #0D1117; /* Dark background */
+        }
+
+        .video-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            width: 90%;
+            max-width: 1200px;
+        }
+
+        .video {
+            background-color: black;
+            object-fit: cover; /* Ensures video covers the entire space */
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .local-video {
+            flex: 100%; /* Local video takes full width on smaller screens */
+            max-height: 30%; /* Adjust based on preference */
+            order: -1; /* Ensures local video is always first */
+        }
+
+        @media (min-width: 640px) {
+            .local-video {
+                flex: 1; /* Adjusts size to fit within the grid */
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .video {
+                width: calc(50% - 5px); /* Two videos per row */
+            }
+
+            .local-video {
+                max-height: none;
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .video {
+                width: calc(33.333% - 7px); /* Three videos per row */
+            }
+        }
+
+    </style>
+   
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script> 
+
+  </head>
+  <body>
+    <body>
+        <div id="video">
+            <table class="mainTable">
+                <tbody>
+                    <tr>
+                        <td class="localColumn">
+                            <video id="localVideo" autoplay class="video" muted ></video>
+                        </td>
+                        <td class="remoteColumn">
+                            <div id="videoContainer"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+  </body>
+  <footer>
+      <script src="bundle.js" type="module"></script>
+  </footer>
+</html>
