@@ -132,7 +132,7 @@ const VideoChat = () => {
 
     return (
         <>
-            <LocalVideo ref={localVideoRef} id="localVideo" autoPlay playsInline  muted={isAudioMuted}  className="video"  style={{borderRadius:5}} />
+            <LocalVideo ref={localVideoRef} id="localVideo" autoPlay playsInline  muted  className="video"  style={{borderRadius:5}} />
             <Layout participants={remoteStreams.length}>
                 {remoteStreams.map(streamInfo => (
                     <MediaPlayer key={streamInfo.id} {...streamInfo} />
