@@ -3,14 +3,22 @@ import io from 'socket.io-client';
 import { Device } from 'mediasoup-client';
 
 const useMediaSoup = () => {
-
+   
     const [remoteStreams, setRemoteStreams] = useState([]);
 
-    let local_stream 
+    const getRooomName =()=>{
+      const currentUrl = window.location.href;
+      const url = new URL(currentUrl);
+      const pathname = url.pathname;
+      const parts = pathname.split('/');
+      return parts[parts.length - 1];
+    }
+
+    let roomName  = getRooomName()
 
     useEffect(() => {
-        const socket = io("https://meetapi.elancelearning.com/mediasoup");
-    
+        // const socket = io("https://localhost:4000/mediasoup");
+        const socket = io("https://meetapi.elancelearning.com/mediasoup")
         socket.on('connection-success', ({ socketId }) => {
           console.log(socketId)
           getLocalStream()
@@ -26,16 +34,10 @@ const useMediaSoup = () => {
         const getLocalStream = () => {
           navigator.mediaDevices.getUserMedia({
             audio: { autoGainControl: false, noiseSuppression: true, echoCancellation: false },
-            video: {
-              width: {
-                min: 640,
-                max: 1920,
-              },
-              height: {
-                min: 400,
-                max: 1080,
-              }
-            }
+            "video": {
+              "width": "320",
+              "height": "240"
+            }  
           })
           .then(streamSuccess)
           .catch(error => {
@@ -72,7 +74,7 @@ const useMediaSoup = () => {
         let consumingTransports = [];
       
         const streamSuccess = (stream) => {
-          local_stream = stream
+          const local_stream = stream
           const localVideo = document.getElementById('localVideo');
           if (localVideo) {
             localVideo.srcObject = local_stream;
@@ -84,7 +86,8 @@ const useMediaSoup = () => {
           joinRoom()
         }
       
-        let roomName = "anas"
+        console.log("roomName",roomName)
+        // let roomName = "anas"
         const joinRoom = () => {
           socket.emit('joinRoom', { roomName }, (data) => {
             console.log(`Router RTP Capabilities... ${data.rtpCapabilities}`)
@@ -273,8 +276,7 @@ const useMediaSoup = () => {
         };
       }, []);
       return{
-        remoteStreams,
-        local_stream
+        remoteStreams
       }
 };
 

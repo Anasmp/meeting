@@ -5,25 +5,58 @@ import './index.css'
 import { FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash, FaPhoneSlash } from 'react-icons/fa';
 
 const calculateGridTemplate = (participants) => {
-  return `repeat(auto-fit, minmax(200px, 1fr))`;
-};
-
-const Layout = styled.div`
-  display: grid;
-  grid-gap: 10px;
-  grid-template-columns: ${props => calculateGridTemplate(props.participants)};
-  padding: 10px;
-  height: 90vh;
-  overflow: auto;
-`;
+    if (participants === 1) {
+      return `1fr`;
+    } else if (participants > 1 && participants <= 3) {
+      return `repeat(${participants}, 1fr)`;
+    }else if(participants > 3 && participants <= 8){
+        return `repeat(auto-fit, minmax(300px, 1fr))`;
+    } 
+    else {
+      return `repeat(auto-fit, minmax(200px, 1fr))`;
+    }
+  };
+  
 
 const VideoFeed = styled.div`
-  aspect-ratio: 16 / 9;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position: relative;
   overflow: hidden;
-  border-radius:5px;
+  border-radius: 5px;
+  background-color: #000; // Fallback for when there's no video
+  
+  ${({ participants }) => participants === 3 ? css`
+    &::before {
+      content: "";
+      display: block;
+      padding-top: 56.25%; // 16:9 Aspect Ratio for 2 participants
+    }
+  ` : css`
+    &::before {
+      content: "";
+      display: block;
+      padding-top: 75%; // 4:3 Aspect Ratio for more than 2 participants
+    }
+  `}
+  
+  video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; // Cover the container without losing aspect ratio
+  }
+`;
+
+const Layout = styled.div`
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: ${props => calculateGridTemplate(props.participants)};
+    padding: 10px;
+    height: 90vh;
+    overflow: auto;
+    justify-content: center; // This will help center the single item grid.
+    align-items: center; // Vertically center in case of a single participant
 `;
 
 const LocalVideo = styled.video`
@@ -68,25 +101,10 @@ const Button = styled.button`
     `}
 `;
 
-    const Header = styled.header`
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 60px; // Adjust height as needed
-    color: white;
-    display: flex;
-    padding-left:30px;
-    align-items: center;
-    font-size: 24px; // Adjust font size as needed
-    font-weight:'bold';
-    z-index: 2; // Ensure the header is above all other content
-    `;
-
 
 const VideoChat = () => {
     
-    const { remoteStreams,local_stream } = useMediaSoup();
+    const { remoteStreams } = useMediaSoup();
     const [isAudioMuted, setIsAudioMuted] = useState(false); 
     const [isVideoOn, setIsVideoOn] = useState(true);
     const localVideoRef = useRef(null);
@@ -140,7 +158,7 @@ const VideoChat = () => {
     return (
         <>
             <LocalVideo ref={localVideoRef} id="localVideo" autoPlay playsInline  muted  className="video"  style={{borderRadius:5}} />
-            <Layout participants={remoteStreams.length}>
+            <Layout participants={remoteStreams.length/2}>
                 {remoteStreams.map(streamInfo => (
                     <MediaPlayer key={streamInfo.id} {...streamInfo} />
                 ))}
