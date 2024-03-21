@@ -14,7 +14,7 @@ const useMediaSoup = () => {
       return parts[parts.length - 1];
     }
 
-    let roomName  = getRooomName()
+    let roomName  = 'anas'
 
     useEffect(() => {
         // const socket = io("https://localhost:4000/mediasoup");
