@@ -106,20 +106,23 @@ connections.on('connection', async socket => {
   }
 
   socket.on('disconnect', () => {
-    
-    console.log('peer disconnected')
-    consumers = removeItems(consumers, socket.id, 'consumer')
-    producers = removeItems(producers, socket.id, 'producer')
-    transports = removeItems(transports, socket.id, 'transport')
+    console.log('peer disconnected');
+    consumers = removeItems(consumers, socket.id, 'consumer');
+    producers = removeItems(producers, socket.id, 'producer');
+    transports = removeItems(transports, socket.id, 'transport');
 
-    const { roomName } = peers[socket.id]
-    delete peers[socket.id]
+    if (peers[socket.id]) { 
+        const { roomName } = peers[socket.id];
+        delete peers[socket.id];
 
-    rooms[roomName] = {
-      router: rooms[roomName].router,
-      peers: rooms[roomName].peers.filter(socketId => socketId !== socket.id)
+        rooms[roomName] = {
+            router: rooms[roomName].router,
+            peers: rooms[roomName].peers.filter(socketId => socketId !== socket.id)
+        };
+    } else {
+        console.log(`No peer found for socket ID: ${socket.id}`);
     }
-  })
+});
 
   socket.on('joinRoom', async ({ roomName }, callback) => {
 
@@ -365,8 +368,8 @@ const createWebRtcTransport = async (router) => {
       const webRtcTransport_options = {
         listenIps: [
           {
-            ip: '192.168.1.22',
-            announcedIp: '192.168.1.22',
+            ip: '192.168.1.13',
+            announcedIp: '192.168.1.13',
           }
         ],
         enableUdp: true,
